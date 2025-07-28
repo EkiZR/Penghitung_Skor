@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Penghitung Skor Pro - Liquid Glass Edition</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+      
+      * {
+        font-family: 'Inter', sans-serif;
+      }
+      
+      .orbitron {
+        font-family: 'Orbitron', monospace;
+      }
+      
+      body {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 25%, #667eea 50%, #764ba2 75%, #f093fb 100%);
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+        background-size: 400% 400%;
+        animation: gradientShift 15s ease infinite;
+      }
+      
+      @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+      
+      body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+          radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.4) 0%, transparent 50%),
+          radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.4) 0%, transparent 50%),
+          radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.5) 0%, transparent 50%),
+          radial-gradient(circle at 70% 60%, rgba(255, 200, 87, 0.3) 0%, transparent 50%);
+        pointer-events: none;
+        z-index: -1;
+        animation: float 25s ease-in-out infinite;
+      }
+      
+      @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
+        25% { transform: translateY(-30px) rotate(2deg) scale(1.05); }
+        50% { transform: translateY(15px) rotate(-1deg) scale(0.95); }
+        75% { transform: translateY(-10px) rotate(1deg) scale(1.02); }
+      }
+      
+      .glass-card {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(25px);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        box-shadow: 
+          0 12px 40px rgba(0, 0, 0, 0.15),
+          inset 0 1px 0 rgba(255, 255, 255, 0.3),
+          0 0 0 1px rgba(255, 255, 255, 0.05);
+      }
+      
+      .glass-button {
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .glass-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.6s;
+      }
+      
+      .glass-button:hover::before {
+        left: 100%;
+      }
+      
+      .glass-button:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+        border-color: rgba(255, 255, 255, 0.4);
+      }
+      
+      .glass-input {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        transition: all 0.3s ease;
+      }
+      
+      .glass-input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+      }
+      
+      .glass-input:focus {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.6);
+        outline: none;
+        box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+        transform: scale(1.02);
+      }
+      
+      .team-section {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        cursor: pointer;
+      }
+      
+      .team-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+      }
+      
+      .team-section:hover::before {
+        opacity: 1;
+      }
+      
+      .team-section:hover {
+        transform: scale(1.02);
+      }
+      
+      .team-section:active {
+        transform: scale(0.98);
+      }
+      
+      .team-a {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 25%, #ff8a80 50%, #ffab91 100%);
+        position: relative;
+        background-size: 200% 200%;
+        animation: teamGradient 8s ease infinite;
+      }
+      
+      .team-b {
+        background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 25%, #6dd5ed 50%, #81c784 100%);
+        position: relative;
+        background-size: 200% 200%;
+        animation: teamGradient 8s ease infinite reverse;
+      }
+      
+      @keyframes teamGradient {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+      
+      .score-text {
+        text-shadow: 
+          0 4px 20px rgba(0, 0, 0, 0.4),
+          0 2px 10px rgba(0, 0, 0, 0.3),
+          0 0 30px rgba(255, 255, 255, 0.3);
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+      }
+      
+      .floating-particles {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        pointer-events: none;
+      }
+      
+      .particle {
+        position: absolute;
+        border-radius: 50%;
+        animation: particleFloat 20s infinite linear;
+        opacity: 0.7;
+      }
+      
+      .particle:nth-child(odd) {
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.2) 100%);
+        width: 6px;
+        height: 6px;
+      }
+      
+      .particle:nth-child(even) {
+        background: radial-gradient(circle, rgba(120, 219, 255, 0.6) 0%, rgba(120, 219, 255, 0.1) 100%);
+        width: 4px;
+        height: 4px;
+      }
+      
+      @keyframes particleFloat {
+        0% {
+          transform: translateY(100vh) translateX(0) rotate(0deg);
+          opacity: 0;
+        }
+        5% {
+          opacity: 1;
+        }
+        95% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-100px) translateX(200px) rotate(360deg);
+          opacity: 0;
+        }
+      }
+      
+      .control-panel {
+        background: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(25px);
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+        position: relative;
+      }
+      
+      .control-panel::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+      }
+      
+      .ripple-effect {
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .ripple-effect::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.4);
+        transform: translate(-50%, -50%);
+        transition: width 0.8s ease-out, height 0.8s ease-out;
+        pointer-events: none;
+      }
+      
+      .ripple-effect:active::after {
+        width: 400px;
+        height: 400px;
+      }
+      
+      .glow-effect {
+        animation: glow 3s ease-in-out infinite alternate;
+      }
+      
+      @keyframes glow {
+        from {
+          text-shadow: 
+            0 0 20px rgba(255, 255, 255, 0.8),
+            0 0 40px rgba(255, 255, 255, 0.6),
+            0 0 60px rgba(255, 255, 255, 0.4);
+        }
+        to {
+          text-shadow: 
+            0 0 30px rgba(255, 255, 255, 1),
+            0 0 50px rgba(255, 255, 255, 0.8),
+            0 0 70px rgba(255, 255, 255, 0.6);
+        }
+      }
+      
+      .setup-title {
+        background: linear-gradient(135deg, #fff 0%, #f0f0f0 50%, #fff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: titleShine 4s ease-in-out infinite;
+      }
+      
+      @keyframes titleShine {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+      }
+      
+      .audio-toggle-off {
+        background: rgba(255, 100, 100, 0.2) !important;
+        border-color: rgba(255, 100, 100, 0.4) !important;
+      }
+      
+      .score-animation {
+        animation: scoreZoom 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      }
+      
+      @keyframes scoreZoom {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.15); }
+        100% { transform: scale(1); }
+      }
+      
+      .voice-selector {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        border-radius: 12px;
+        padding: 8px;
+        transition: all 0.3s ease;
+      }
+      
+      .voice-selector:focus {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.5);
+        outline: none;
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+      }
+      
+      .voice-selector option {
+        background: rgba(30, 30, 30, 0.9);
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Floating Particles Background -->
+    <div class="floating-particles fixed inset-0 z-0" id="particles"></div>
+
+    <!-- Setup Screen -->
+    <div id="setupScreen" class="min-h-screen flex items-center justify-center p-4 relative z-10">
+      <div class="glass-card rounded-3xl p-8 shadow-2xl max-w-lg w-full transform hover:scale-105 transition-all duration-500">
+        <h1 class="text-5xl font-bold text-center mb-8 setup-title glow-effect">
+          ⚡ Setup Pertandingan Pro
+        </h1>
+        <div class="space-y-6">
+          <div>
+            <label class="block text-sm font-medium text-white/90 mb-3">
+              🏆 Nama Team A
+            </label>
+            <input
+              type="text"
+              id="teamAName"
+              placeholder="Masukkan nama Team A"
+              class="glass-input w-full px-4 py-4 rounded-xl focus:ring-2 focus:ring-white/30 transition-all duration-300"
+              value="Team A"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-white/90 mb-3">
+              🎯 Nama Team B
+            </label>
+            <input
+              type="text"
+              id="teamBName"
+              placeholder="Masukkan nama Team B"
+              class="glass-input w-full px-4 py-4 rounded-xl focus:ring-2 focus:ring-white/30 transition-all duration-300"
+              value="Team B"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-white/90 mb-3">
+              🎤 Pilih Suara
+            </label>
+            <select id="voiceSelector" class="voice-selector w-full px-4 py-4">
+              <option value="">Loading voices...</option>
+            </select>
+          </div>
+          <div class="flex space-x-3">
+            <button
+              id="testVoiceBtn"
+              onclick="testVoice()"
+              class="glass-button flex-1 text-white py-4 px-6 rounded-xl font-semibold text-lg ripple-effect"
+            >
+              🔊 Test Suara
+            </button>
+            <button
+              onclick="startGame()"
+              class="glass-button flex-1 text-white py-4 px-6 rounded-xl font-semibold text-lg ripple-effect"
+            >
+              🚀 Mulai
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="gameScreen" class="hidden min-h-screen flex flex-col">
+      <!-- Scoreboard - Full Screen Split -->
+      <div class="flex-1 grid grid-cols-1 md:grid-cols-2">
+        <!-- Team A - Left Half -->
+        <div
+          onclick="addScore('A')"
+          class="team-section team-a ripple-effect cursor-pointer flex flex-col items-center justify-center min-h-[50vh] md:min-h-full"
+        >
+          <h2 id="teamADisplay" class="text-4xl md:text-6xl font-bold mb-8 score-text">Team A</h2>
+          <div class="orbitron text-8xl md:text-[12rem] font-black score-text" id="scoreA">0</div>
+          <div class="text-lg md:text-xl opacity-80 mt-4">Tap untuk +1</div>
+        </div>
+
+        <!-- Team B - Right Half -->
+        <div
+          onclick="addScore('B')"
+          class="team-section team-b ripple-effect cursor-pointer flex flex-col items-center justify-center min-h-[50vh] md:min-h-full"
+        >
+          <h2 id="teamBDisplay" class="text-4xl md:text-6xl font-bold mb-8 score-text">Team B</h2>
+          <div class="orbitron text-8xl md:text-[12rem] font-black score-text" id="scoreB">0</div>
+          <div class="text-lg md:text-xl opacity-80 mt-4">Tap untuk +1</div>
+        </div>
+      </div>
+
+      <!-- Controls at Bottom -->
+      <div class="control-panel py-6">
+        <div class="flex justify-center space-x-4 flex-wrap gap-2">
+          <button
+            onclick="subtractScore('A')"
+            class="glass-button text-white px-4 py-3 rounded-xl font-semibold transition-all text-sm"
+          >
+            ➖ Team A
+          </button>
+          <button
+            onclick="subtractScore('B')"
+            class="glass-button text-white px-4 py-3 rounded-xl font-semibold transition-all text-sm"
+          >
+            ➖ Team B
+          </button>
+          <button
+            onclick="resetGame()"
+            class="glass-button text-white px-6 py-3 rounded-xl font-semibold transition-all text-base"
+          >
+            🔄 Reset
+          </button>
+          <button
+            onclick="newGame()"
+            class="glass-button text-white px-6 py-3 rounded-xl font-semibold transition-all text-base"
+          >
+            🎮 Game Baru
+          </button>
+          <button
+            id="audioToggle"
+            onclick="toggleAudio()"
+            class="glass-button text-white px-6 py-3 rounded-xl font-semibold transition-all text-base"
+          >
+            🔊 Suara ON
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let scoreA = 0;
+      let scoreB = 0;
+      let teamAName = "Team A";
+      let teamBName = "Team B";
+      let audioEnabled = true;
+      let selectedVoice = null;
+      let availableVoices = [];
+
+      // Create enhanced floating particles
+      function createParticles() {
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 30; i++) {
+          const particle = document.createElement('div');
+          particle.className = 'particle';
+          particle.style.left = Math.random() * 100 + '%';
+          particle.style.animationDelay = Math.random() * 20 + 's';
+          particle.style.animationDuration = (Math.random() * 15 + 15) + 's';
+          particlesContainer.appendChild(particle);
+        }
+      }
+
+      // Enhanced voice loading with better categorization
+      function loadVoices() {
+        availableVoices = speechSynthesis.getVoices();
+        const voiceSelector = document.getElementById('voiceSelector');
+        voiceSelector.innerHTML = '';
+
+        if (availableVoices.length === 0) {
+          voiceSelector.innerHTML = '<option value="">No voices available</option>';
+          return;
+        }
+
+        // Categorize voices for better selection
+        const voiceCategories = {
+          indonesian: [],
+          english: [],
+          natural: [],
+          other: []
+        };
+
+        availableVoices.forEach((voice, index) => {
+          const voiceName = voice.name.toLowerCase();
+          const voiceLang = voice.lang.toLowerCase();
+          
+          if (voiceLang.includes('id') || voiceName.includes('indonesia')) {
+            voiceCategories.indonesian.push({voice, index});
+          } else if (voiceLang.includes('en')) {
+            if (voiceName.includes('natural') || voiceName.includes('neural') || 
+                voiceName.includes('premium') || voiceName.includes('enhanced')) {
+              voiceCategories.natural.push({voice, index});
+            } else {
+              voiceCategories.english.push({voice, index});
+            }
+          } else {
+            voiceCategories.other.push({voice, index});
+          }
+        });
+
+        // Add categorized options
+        function addVoiceGroup(groupName, voices) {
+          if (voices.length > 0) {
+            const optgroup = document.createElement('optgroup');
+            optgroup.label = groupName;
+            voices.forEach(({voice, index}) => {
+              const option = document.createElement('option');
+              option.value = index;
+              option.textContent = `${voice.name} (${voice.lang})`;
+              optgroup.appendChild(option);
+            });
+            voiceSelector.appendChild(optgroup);
+          }
+        }
+
+        addVoiceGroup('🇮🇩 Indonesian Voices', voiceCategories.indonesian);
+        addVoiceGroup('🤖 Natural/Premium Voices', voiceCategories.natural);
+        addVoiceGroup('🇺🇸 English Voices', voiceCategories.english);
+        addVoiceGroup('🌍 Other Languages', voiceCategories.other);
+
+        // Set default voice
+        if (voiceCategories.indonesian.length > 0) {
+          selectedVoice = voiceCategories.indonesian[0].voice;
+          voiceSelector.value = voiceCategories.indonesian[0].index;
+        } else if (voiceCategories.natural.length > 0) {
+          selectedVoice = voiceCategories.natural[0].voice;
+          voiceSelector.value = voiceCategories.natural[0].index;
+        } else if (availableVoices.length > 0) {
+          selectedVoice = availableVoices[0];
+          voiceSelector.value = 0;
+        }
+
+        // Add change listener
+        voiceSelector.addEventListener('change', function() {
+          const selectedIndex = parseInt(this.value);
+          if (!isNaN(selectedIndex) && availableVoices[selectedIndex]) {
+            selectedVoice = availableVoices[selectedIndex];
+          }
+        });
+      }
+
+      // Test voice function
+      function testVoice() {
+        if (!selectedVoice) {
+          alert('Pilih suara terlebih dahulu!');
+          return;
+        }
+
+        const testText = "Halo, ini adalah tes suara untuk pertandingan. Tim A nol, Tim B nol.";
+        const utterance = new SpeechSynthesisUtterance(testText);
+        
+        utterance.voice = selectedVoice;
+        utterance.lang = selectedVoice.lang || "id-ID";
+        utterance.rate = 0.8;
+        utterance.pitch = 1.0;
+        utterance.volume = 0.9;
+        
+        speechSynthesis.cancel();
+        speechSynthesis.speak(utterance);
+      }
+
+      // Enhanced announce score with better voice handling
+      function announceScore(scoringTeam) {
+        if (!audioEnabled || !selectedVoice) return;
+        
+        let text;
+        if (scoreA === scoreB) {
+          text = `Skor sama ${scoreA}`;
+        } else if (scoringTeam === "A") {
+          text = `${teamAName} ${scoreA}, ${teamBName} ${scoreB}`;
+        } else {
+          text = `${teamBName} ${scoreB}, ${teamAName} ${scoreA}`;
+        }
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.voice = selectedVoice;
+        utterance.lang = selectedVoice.lang || "id-ID";
+        utterance.rate = 0.8;
+        utterance.pitch = 1.0;
+        utterance.volume = 0.9;
+        
+        speechSynthesis.cancel();
+        speechSynthesis.speak(utterance);
+      }
+
+      // Enhanced sound effects
+      function playScoreSound(team, isAdd = true) {
+        if (!audioEnabled) return;
+        
+        if (window.AudioContext || window.webkitAudioContext) {
+          const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          
+          if (isAdd) {
+            // Success sound for adding score
+            const frequencies = team === 'A' ? [800, 1000, 1200] : [600, 800, 1000];
+            frequencies.forEach((freq, index) => {
+              setTimeout(() => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+              }, index * 100);
+            });
+          } else {
+            // Different sound for subtracting
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+            oscillator.frequency.linearRampToValueAtTime(200, audioContext.currentTime + 0.5);
+            oscillator.type = 'triangle';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+          }
+        }
+      }
+
+      function toggleAudio() {
+        audioEnabled = !audioEnabled;
+        const audioBtn = document.getElementById('audioToggle');
+        audioBtn.textContent = audioEnabled ? '🔊 Suara ON' : '🔇 Suara OFF';
+        
+        if (audioEnabled) {
+          audioBtn.classList.remove('audio-toggle-off');
+        } else {
+          audioBtn.classList.add('audio-toggle-off');
+        }
+      }
+
+      function startGame() {
+        const teamAInput = document.getElementById("teamAName").value.trim();
+        const teamBInput = document.getElementById("teamBName").value.trim();
+
+        teamAName = teamAInput || "Team A";
+        teamBName = teamBInput || "Team B";
+
+        document.getElementById("teamADisplay").textContent = teamAName;
+        document.getElementById("teamBDisplay").textContent = teamBName;
+
+        document.getElementById("setupScreen").classList.add("hidden");
+        document.getElementById("gameScreen").classList.remove("hidden");
+
+        setTimeout(() => {
+          if (audioEnabled && selectedVoice) {
+            const utterance = new SpeechSynthesisUtterance("Pertandingan dimulai! Semoga beruntung!");
+            utterance.voice = selectedVoice;
+            utterance.lang = selectedVoice.lang || "id-ID";
+            utterance.rate = 0.8;
+            utterance.pitch = 1.1;
+            speechSynthesis.cancel();
+            speechSynthesis.speak(utterance);
+          }
+        }, 800);
+      }
+
+      function addScore(team) {
+        if (team === "A") {
+          scoreA++;
+          document.getElementById("scoreA").textContent = scoreA;
+          document.getElementById("scoreA").classList.add("score-animation");
+        } else {
+          scoreB++;
+          document.getElementById("scoreB").textContent = scoreB;
+          document.getElementById("scoreB").classList.add("score-animation");
+        }
+
+        // Remove animation class after animation
+        setTimeout(() => {
+          document.getElementById("score" + team).classList.remove("score-animation");
+        }, 600);
+
+        // Enhanced visual feedback
+        const teamElement = team === "A" 
+          ? document.querySelector('.team-a')
+          : document.querySelector('.team-b');
+
+        teamElement.style.transform = "scale(0.95)";
+        teamElement.style.filter = "brightness(1.3) saturate(1.2)";
+        
+        setTimeout(() => {
+          teamElement.style.transform = "scale(1)";
+          teamElement.style.filter = "brightness(1) saturate(1)";
+        }, 300);
+
+        playScoreSound(team, true);
+        setTimeout(() => announceScore(team), 200);
+      }
+
+      function subtractScore(team) {
+        if (team === "A" && scoreA > 0) {
+          scoreA--;
+          document.getElementById("scoreA").textContent = scoreA;
+        } else if (team === "B" && scoreB > 0) {
+          scoreB--;
+          document.getElementById("scoreB").textContent = scoreB;
+        } else {
+          return; // Can't go below 0
+        }
+
+        playScoreSound(team, false);
+        setTimeout(() => announceScore(team), 200);
+      }
+
+      function resetGame() {
+        scoreA = 0;
+        scoreB = 0;
+        document.getElementById("scoreA").textContent = scoreA;
+        document.getElementById("scoreB").textContent = scoreB;
+
+        const scoreElements = [document.getElementById("scoreA"), document.getElementById("scoreB")];
+        scoreElements.forEach(el => {
+          el.style.transform = "scale(0.8)";
+          setTimeout(() => {
+            el.style.transform = "scale(1)";
+          }, 300);
+        });
+
+        setTimeout(() => {
+          if (audioEnabled && selectedVoice) {
+            const utterance = new SpeechSynthesisUtterance("Skor telah direset ke nol");
+            utterance.voice = selectedVoice;
+            utterance.lang = selectedVoice.lang || "id-ID";
+            utterance.rate = 0.8;
+            utterance.pitch = 1.0;
+            speechSynthesis.cancel();
+            speechSynthesis.speak(utterance);
+          }
+        }, 400);
+      }
+
+      function newGame() {
+        scoreA = 0;
+        scoreB = 0;
+
+        document.getElementById("gameScreen").classList.add("hidden");
+        document.getElementById("setupScreen").classList.remove("hidden");
+
+        document.getElementById("teamAName").value = "Team A";
+        document.getElementById("teamBName").value = "Team B";
+      }
+
+      // Keyboard shortcuts
+      document.addEventListener('keydown', function(e) {
+        if (document.getElementById('gameScreen').classList.contains('hidden')) return;
+        
+        switch(e.key) {
+          case 'a':
+          case 'A':
+            addScore('A');
+            break;
+          case 'b':
+          case 'B':
+            addScore('B');
+            break;
+          case 'q':
+          case 'Q':
+            subtractScore('A');
+            break;
+          case 'w':
+          case 'W':
+            subtractScore('B');
+            break;
+          case 'r':
+          case 'R':
+            resetGame();
+            break;
+          case 'm':
+          case 'M':
+            toggleAudio();
+            break;
+        }
+      });
+
+      // Initialize everything
+      window.addEventListener('load', () => {
+        createParticles();
+        loadVoices();
+        
+        // Add keyboard shortcuts info
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'fixed bottom-4 right-4 glass-card p-3 rounded-lg text-xs text-white/80 max-w-xs hidden md:block';
+        infoDiv.innerHTML = `
+          <div class="font-semibold mb-2">⌨️ Keyboard Shortcuts:</div>
+          <div>A = +1 Team A | Q = -1 Team A</div>
+          <div>B = +1 Team B | W = -1 Team B</div>
+          <div>R = Reset | M = Toggle Audio</div>
+        `;
+        document.body.appendChild(infoDiv);
+      });
+
+      // Load voices when available
+      if (speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = loadVoices;
+      }
+
+      // Enhanced error handling for speech synthesis
+      function handleSpeechError(utterance) {
+        utterance.onerror = function(event) {
+          console.log('Speech synthesis error:', event.error);
+          if (event.error === 'network') {
+            console.log('Network issue - speech may not work offline');
+          }
+        };
+      }
+
+      // Add smooth transitions when switching screens
+      function smoothTransition(hideElement, showElement) {
+        hideElement.style.opacity = '0';
+        hideElement.style.transform = 'scale(0.95)';
+        
+        setTimeout(() => {
+          hideElement.classList.add('hidden');
+          showElement.classList.remove('hidden');
+          showElement.style.opacity = '0';
+          showElement.style.transform = 'scale(1.05)';
+          
+          setTimeout(() => {
+            showElement.style.opacity = '1';
+            showElement.style.transform = 'scale(1)';
+          }, 50);
+        }, 300);
+      }
+    </script>
+  </body>
+</html>
